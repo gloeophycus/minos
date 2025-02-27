@@ -9,7 +9,7 @@ temp/%.o: source/%.c
 entrypoint.bin: temp/entrypoint.o
 	ld -N -e _start -Ttext 0xC200 -S --oformat binary -o $@ $<
 
-main.bin: temp/main.o temp/assembly_functions.o
+main.bin: temp/main.o temp/assembly_functions.o temp/graphics.o
 	ld -T kernel.ld --oformat binary -o $@ $^
 
 clean:
