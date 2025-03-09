@@ -1,4 +1,6 @@
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include "graphics.h"
 
 extern const unsigned char fonts[][16];

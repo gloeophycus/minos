@@ -7,7 +7,7 @@ SECTIONS
 		LONG(128 * 1024)		/* 0x00: stack + .data + heap size */
 		LONG(0x206E696D)		/* 0x04: "min " */
 		LONG(0)					/* 0x08: "memory map area size */
-		LONG(0x1000)			/* 0x0C: stack initial value & .data destination */
+		LONG(0x10000)			/* 0x0C: stack initial value & .data destination */
 		LONG(SIZEOF(.data))		/* 0x10: .data size */
 		LONG(LOADADDR(.data))	/* 0x14: .data initial value file offset */
 		LONG(0xE9000000)		/* 0x18: jump pattern (x86 jmp) */
@@ -17,7 +17,7 @@ SECTIONS
 
 	.text : { *(.text) }
 
-	.data 0x1000 : AT ( ADDR(.text) + SIZEOF(.text) )
+	.data 0x10000 : AT ( ADDR(.text) + SIZEOF(.text) )
 	{
 		*(.data)
 		*(.rodata*)
