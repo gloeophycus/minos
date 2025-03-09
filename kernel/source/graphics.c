@@ -1,8 +1,22 @@
 #include "graphics.h"
 
-void initialize_palette(void)
+void set_colors(int size, const RGB *colors)
 {
-	static RGB palette[16] = {
+	int eflags = load_eflags();
+	cli();
+	out_8bit(WRITE_ADDRESS_REGISTER, 0);
+	for (int i = 0; i < size; i++)
+	{
+		out_8bit(DATA_REGISTER, colors[i].red / 4);
+		out_8bit(DATA_REGISTER, colors[i].green / 4);
+		out_8bit(DATA_REGISTER, colors[i].blue / 4);
+	}
+	store_eflags(eflags);
+}
+
+void initialize_colors(void)
+{
+	const RGB colors[16] = {
 		{0x00, 0x00, 0x00}, // black
 		{0xFF, 0x00, 0x00}, // red
 		{0x00, 0xFF, 0x00}, // green
@@ -20,21 +34,18 @@ void initialize_palette(void)
 		{0x00, 0x84, 0x84}, // dark cyan
 		{0x84, 0x84, 0x84}, // dark gray
 	};
-	set_palette(sizeof(palette) / sizeof(*palette), palette);
+	set_colors(sizeof(colors) / sizeof(*colors), colors);
 }
 
-void set_palette(int size, RGB *palette)
+void draw_rectangle(unsigned char *vram, int screen_x, int color, Point point_1, Point point_2)
 {
-	int eflags = load_eflags();
-	cli();
-	out_8bit(WRITE_ADDRESS_REGISTER, 0);
-	for (int i = 0; i < size; i++)
+	for (int y = point_1.y; y <= point_2.y; y++)
 	{
-		out_8bit(DATA_REGISTER, palette[i].red / 4);
-		out_8bit(DATA_REGISTER, palette[i].green / 4);
-		out_8bit(DATA_REGISTER, palette[i].blue / 4);
+		for (int x = point_1.x; x <= point_2.x; x++)
+		{
+			vram[x + y * screen_x] = color;
+		}
 	}
-	store_eflags(eflags);
 }
 
 void initialize_screen(unsigned char *vram, int x, int y)
@@ -53,15 +64,4 @@ void initialize_screen(unsigned char *vram, int x, int y)
 	draw_rectangle(vram, x, DARK_GRAY, (Point){x - 47, y - 23}, (Point){x - 47, y - 4});
 	draw_rectangle(vram, x, WHITE, (Point){x - 47, y - 3}, (Point){x - 4, y - 3});
 	draw_rectangle(vram, x, WHITE, (Point){x - 3, y - 24}, (Point){x - 3, y - 3});
-}
-
-void draw_rectangle(unsigned char *vram, int x_size, int color, Point point_1, Point point_2)
-{
-	for (int y = point_1.y; y <= point_2.y; y++)
-	{
-		for (int x = point_1.x; x <= point_2.x; x++)
-		{
-			vram[x + y * x_size] = color;
-		}
-	}
 }

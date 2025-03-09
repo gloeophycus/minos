@@ -45,7 +45,7 @@ typedef struct
 	char reserve;
 	short screen_x;
 	short screen_y;
-	char *vram;
+	unsigned char *vram;
 } SystemInfo;
 
 typedef struct
@@ -54,9 +54,9 @@ typedef struct
 	int y;
 } Point;
 
-void initialize_palette(void);
-void set_palette(int size, RGB *palette);
+void set_colors(int size, const RGB *colors);
+void initialize_colors(void);
+void draw_rectangle(unsigned char *vram, int screen_x, int color, Point point_1, Point point_2);
 void initialize_screen(unsigned char *vram, int x, int y);
-void draw_rectangle(unsigned char *vram, int x_size, int color, Point point_1, Point point_2);
 
 #endif
