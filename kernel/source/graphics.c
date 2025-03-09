@@ -37,7 +37,66 @@ void initialize_colors(void)
 	set_colors(sizeof(colors) / sizeof(*colors), colors);
 }
 
-void draw_rectangle(unsigned char *vram, int screen_x, int color, Point point_1, Point point_2)
+void initialize_screen(int x, int y, unsigned char *vram)
+{
+	draw_rectangle(x, DARK_CYAN, (Point){0, 0}, (Point){x - 1, y - 29}, vram);
+	draw_rectangle(x, GRAY, (Point){0, y - 28}, (Point){x - 1, y - 28}, vram);
+	draw_rectangle(x, WHITE, (Point){0, y - 27}, (Point){x - 1, y - 27}, vram);
+	draw_rectangle(x, GRAY, (Point){0, y - 26}, (Point){x - 1, y - 1}, vram);
+	draw_rectangle(x, WHITE, (Point){3, y - 24}, (Point){59, y - 24}, vram);
+	draw_rectangle(x, WHITE, (Point){2, y - 24}, (Point){2, y - 4}, vram);
+	draw_rectangle(x, DARK_GRAY, (Point){3, y - 4}, (Point){59, y - 4}, vram);
+	draw_rectangle(x, DARK_GRAY, (Point){59, y - 23}, (Point){59, y - 5}, vram);
+	draw_rectangle(x, BLACK, (Point){2, y - 3}, (Point){59, y - 3}, vram);
+	draw_rectangle(x, BLACK, (Point){60, y - 24}, (Point){60, y - 3}, vram);
+	draw_rectangle(x, DARK_GRAY, (Point){x - 47, y - 24}, (Point){x - 4, y - 24}, vram);
+	draw_rectangle(x, DARK_GRAY, (Point){x - 47, y - 23}, (Point){x - 47, y - 4}, vram);
+	draw_rectangle(x, WHITE, (Point){x - 47, y - 3}, (Point){x - 4, y - 3}, vram);
+	draw_rectangle(x, WHITE, (Point){x - 3, y - 24}, (Point){x - 3, y - 3}, vram);
+}
+
+void initialize_mouse_cursor(char *buffer, char background_color)
+{
+    const char cursor[16][16] = {
+		"**************..",
+		"*OOOOOOOOOOO*...",
+		"*OOOOOOOOOO*....",
+		"*OOOOOOOOO*.....",
+		"*OOOOOOOO*......",
+		"*OOOOOOO*.......",
+		"*OOOOOOO*.......",
+		"*OOOOOOOO*......",
+		"*OOOO**OOO*.....",
+		"*OOO*..*OOO*....",
+		"*OO*....*OOO*...",
+		"*O*......*OOO*..",
+		"**........*OOO*.",
+		"*..........*OOO*",
+		"............*OO*",
+		".............***",
+	};
+
+    for (int i = 0; i < 16; i++)
+    {
+        for (int j = 0; j < 16; j++)
+        {
+            switch (cursor[i][j])
+            {
+            case '*':
+                buffer[i * 16 + j] = BLACK;
+                break;
+            case 'O':
+                buffer[i * 16 + j] = WHITE;
+                break;
+            case '.':
+                buffer[i * 16 + j] = background_color;
+                break;
+            }
+        }
+    }
+}
+
+void draw_rectangle(int screen_x, int color, Point point_1, Point point_2, unsigned char *vram)
 {
 	for (int y = point_1.y; y <= point_2.y; y++)
 	{
@@ -48,20 +107,38 @@ void draw_rectangle(unsigned char *vram, int screen_x, int color, Point point_1,
 	}
 }
 
-void initialize_screen(unsigned char *vram, int x, int y)
+void draw_image(int screen_x, int image_x, int image_y, int buffer_x, Point point, const char *buffer, unsigned char *vram)
 {
-	draw_rectangle(vram, x, DARK_CYAN, (Point){0, 0}, (Point){x - 1, y - 29});
-	draw_rectangle(vram, x, GRAY, (Point){0, y - 28}, (Point){x - 1, y - 28});
-	draw_rectangle(vram, x, WHITE, (Point){0, y - 27}, (Point){x - 1, y - 27});
-	draw_rectangle(vram, x, GRAY, (Point){0, y - 26}, (Point){x - 1, y - 1});
-	draw_rectangle(vram, x, WHITE, (Point){3, y - 24}, (Point){59, y - 24});
-	draw_rectangle(vram, x, WHITE, (Point){2, y - 24}, (Point){2, y - 4});
-	draw_rectangle(vram, x, DARK_GRAY, (Point){3, y - 4}, (Point){59, y - 4});
-	draw_rectangle(vram, x, DARK_GRAY, (Point){59, y - 23}, (Point){59, y - 5});
-	draw_rectangle(vram, x, BLACK, (Point){2, y - 3}, (Point){59, y - 3});
-	draw_rectangle(vram, x, BLACK, (Point){60, y - 24}, (Point){60, y - 3});
-	draw_rectangle(vram, x, DARK_GRAY, (Point){x - 47, y - 24}, (Point){x - 4, y - 24});
-	draw_rectangle(vram, x, DARK_GRAY, (Point){x - 47, y - 23}, (Point){x - 47, y - 4});
-	draw_rectangle(vram, x, WHITE, (Point){x - 47, y - 3}, (Point){x - 4, y - 3});
-	draw_rectangle(vram, x, WHITE, (Point){x - 3, y - 24}, (Point){x - 3, y - 3});
+    for (int y = 0; y < image_y; y++)
+    {
+        for (int x = 0; x < image_x; x++)
+        {
+            vram[(point.y + y) * screen_x + (point.x + x)] = buffer[y * buffer_x + x];
+        }
+    }
+}
+
+// __attribute__((optimize("O0")))
+void print_character(int screen_x, int color, Point point, const unsigned char *font, unsigned char *vram)
+{
+	for (int i = 0; i < 16; i++)
+	{
+		for (int j = 0; j < 8; j++)
+		{
+			if (font[i] & (0x80 >> j))
+			{
+				vram[(point.y + i) * screen_x + point.x + j] = color;
+			}
+		}
+	}
+}
+
+void print_string(int screen_x, int color, Point point, const unsigned char *string, unsigned char *vram)
+{
+    extern const unsigned char fonts[][16];
+	for (int i = 0; string[i] != '\0'; i++)
+	{
+		print_character(screen_x, color, point, fonts[string[i]], vram);
+		point.x += 8;
+	}
 }
