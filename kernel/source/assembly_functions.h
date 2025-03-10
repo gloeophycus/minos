@@ -15,5 +15,7 @@ int load_eflags(void);
 void store_eflags(int eflags);
 void load_gdtr(int limit, int address);
 void load_idtr(int limit, int address);
+void _keyboard_interrupt_handler(void);
+void _mouse_interrupt_handler(void);
 
 #endif

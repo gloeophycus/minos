@@ -133,12 +133,12 @@ void print_character(int screen_x, int color, Point point, const unsigned char *
 	}
 }
 
-void print_string(int screen_x, int color, Point point, const unsigned char *string, unsigned char *vram)
+void print_string(int screen_x, int color, Point point, const char *string, unsigned char *vram)
 {
     extern const unsigned char fonts[][16];
 	for (int i = 0; string[i] != '\0'; i++)
 	{
-		print_character(screen_x, color, point, fonts[string[i]], vram);
+		print_character(screen_x, color, point, fonts[(unsigned char)string[i]], vram);
 		point.x += 8;
 	}
 }

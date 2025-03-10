@@ -4,7 +4,8 @@
 .global		out_8bit, out_16bit, out_32bit
 .global		load_eflags, store_eflags
 .global		load_gdtr, load_idtr
-
+.global		_keyboard_interrupt_handler, _mouse_interrupt_handler
+.extern 	keyboard_interrupt_handler, mouse_interrupt_handler
 hlt:
 	hlt
 	ret
@@ -79,3 +80,35 @@ load_idtr:
 	mov	[esp + 6], ax
 	lidt	[esp + 6]
 	ret
+
+_keyboard_interrupt_handler:
+	push	es
+	push	ds
+	pushad
+	mov	eax, esp
+	push	eax
+	mov	ax, ss
+	mov	ds, ax
+	mov	es, ax
+	call	keyboard_interrupt_handler
+	pop	eax
+	popad
+	pop	ds
+	pop	es
+	iretd
+
+_mouse_interrupt_handler:
+	push	es
+	push	ds
+	pushad
+	mov	eax, esp
+	push	eax
+	mov	ax, ss
+	mov	ds, ax
+	mov	es, ax
+	call	mouse_interrupt_handler
+	pop	eax
+	popad
+	pop	ds
+	pop	es
+	iretd

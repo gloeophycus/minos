@@ -23,7 +23,7 @@ enum Color
 	DARK_GRAY,
 };
 
-enum DAC
+enum DAC // digital to analog converter
 {
 	READ_ADDRESS_REGISTER = 0x03C7,
 	WRITE_ADDRESS_REGISTER = 0x03C8,
@@ -39,17 +39,6 @@ typedef struct __attribute__((packed))
 
 typedef struct
 {
-	char sectors;
-	char leds;
-	char vmode;
-	char reserve;
-	short screen_x;
-	short screen_y;
-	unsigned char *vram;
-} SystemInfo;
-
-typedef struct
-{
 	int x;
 	int y;
 } Point;
@@ -61,6 +50,6 @@ void initialize_mouse_cursor(char *buffer, char background_color);
 void draw_rectangle(int screen_x, int color, Point point_1, Point point_2, unsigned char *vram);
 void draw_image(int screen_x, int image_x, int image_y, int buffer_x, Point point, const char *buffer, unsigned char *vram);
 void print_character(int screen_x, int color, Point point, const unsigned char *font, unsigned char *vram);
-void print_string(int screen_x, int color, Point point, const unsigned char *string, unsigned char *vram);
+void print_string(int screen_x, int color, Point point, const char *string, unsigned char *vram);
 
 #endif
