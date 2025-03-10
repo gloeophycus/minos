@@ -12,20 +12,20 @@ static char* to_upper_case(char *string)
 	return string;
 }
 
-static char* convert_number(char conversion, char *buffer, va_list ap)
+static char* convert_number(char conversion, char *buffer, va_list *ap)
 {
 	switch (conversion)
 	{
 	case 'd':
 	case 'i':
-		return itoa(va_arg(ap, int), buffer, 10);
+		return itoa(va_arg(*ap, int), buffer, 10);
 	case 'u':
-		return utoa(va_arg(ap, unsigned int), buffer, 10);
+		return utoa(va_arg(*ap, unsigned int), buffer, 10);
 	case 'p':
 	case 'x':
-		return utoa(va_arg(ap, unsigned int), buffer, 16);
+		return utoa(va_arg(*ap, unsigned int), buffer, 16);
 	case 'X':
-		return to_upper_case(utoa(va_arg(ap, unsigned int), buffer, 16));
+		return to_upper_case(utoa(va_arg(*ap, unsigned int), buffer, 16));
 	}
 	return "";
 }
@@ -51,7 +51,7 @@ int vsprintf(char *buffer, const char *string, va_list ap)
 				argument = "%";
 				break;
 			default:
-				argument = convert_number(string[i], number_buffer, ap);
+				argument = convert_number(string[i], number_buffer, &ap);
 				break;
 			}
 

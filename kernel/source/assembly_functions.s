@@ -3,6 +3,7 @@
 .global		in_8bit, in_16bit, in_32bit
 .global		out_8bit, out_16bit, out_32bit
 .global		load_eflags, store_eflags
+.global		load_gdtr, load_idtr
 
 hlt:
 	hlt
@@ -67,3 +68,14 @@ store_eflags:
 	popfd
 	ret	
 	
+load_gdtr:
+	mov	ax, [esp + 4]
+	mov	[esp + 6], ax
+	lgdt	[esp + 6]
+	ret
+
+load_idtr:
+	mov	ax, [esp + 4]
+	mov	[esp + 6], ax
+	lidt	[esp + 6]
+	ret
