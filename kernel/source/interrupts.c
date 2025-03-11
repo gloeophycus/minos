@@ -1,7 +1,11 @@
+#include <stdio.h>
 #include "assembly_functions.h"
 #include "entrypoint.h"
 #include "graphics.h"
 #include "interrupts.h"
+#include "queue.h"
+
+Queue keyboard_queue;
 
 void initialize_pic(void)
 {
@@ -21,14 +25,8 @@ void initialize_pic(void)
 
 void keyboard_interrupt_handler(__attribute__((unused))int *esp)
 {
-	SystemInfo *system_info = (SystemInfo*)SYSTEM_INFO_ADDRESS;
-	draw_rectangle(system_info->screen_x, BLACK, (Point){0, 0}, (Point){32 * 8 - 1, 15}, system_info->vram);
-	print_string(system_info->screen_x, WHITE, (Point){0, 0}, "INT 21 (IRQ-1): PS/2 keyboard", system_info->vram);
-
-	while (1)
-	{
-		hlt();
-	}
+	out_8bit(PIC0_OCW2, PIC_VECTOR_OFFSET + 1);
+	enqueue(in_8bit(KEYBOARD_DATA_PORT), &keyboard_queue);
 }
 
 void mouse_interrupt_handler(__attribute__((unused))int *esp)
