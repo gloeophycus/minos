@@ -24,7 +24,6 @@ int enqueue(unsigned char data, Queue *queue)
 		queue->rear = 0;
 	}
 	queue->size++;
-
 	return 0;
 }
 
