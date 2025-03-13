@@ -10,9 +10,11 @@ bootloader_:
 	make -C bootloader
 
 library_:
+	mkdir -p library/temp
 	make -C library
 
 kernel_:
+	mkdir -p kernel/temp
 	make -C kernel
 
 disk.img: bootloader_ library_ kernel_

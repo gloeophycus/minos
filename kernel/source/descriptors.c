@@ -5,8 +5,8 @@ void set_segment_descriptor(unsigned int limit, int base, int access_right, Segm
 {
 	if (limit > 0xFFFFF)
 	{
-		access_right |= 0x8000; // G = 1
-		limit /= 0x1000;
+		access_right |= G_BIT;
+		limit /= 0x1000; // 4KB
 	}
 
 	segment_descriptor->limit_low = limit & 0xFFFF;
@@ -28,16 +28,12 @@ void set_gate_descriptor(int offset, int selector, int access_right, GateDescrip
 
 void initialize_gdt(void)
 {
-	const int GDT_ADDRESS = 0x00270000;
-	const int GDT_LIMIT = 0x0000FFFF;
 	SegmentDescriptor *gdt = (SegmentDescriptor*)GDT_ADDRESS;
 	for (int i = 0; i < GDT_LIMIT / 8; i++)
 	{
 		set_segment_descriptor(0, 0, 0, gdt + i);
 	}
 
-	const int KERNEL_ADDRESS = 0x00280000;
-	const int KERNEL_LIMIT = 0x0007FFFF;
 	const int DATA_RW_ACCESS_RIGHT = 0x4092; // G = 0, D = 1, L = 0, AVL = 0, P = 1, DPL = 0, S = 1, type = 0x02 (data segment read/write)
 	const int CODE_ER_ACCESS_RIGHT = 0x409A; // G = 0, D = 1, L = 0, AVL = 0, P = 1, DPL = 0, S = 1, type = 0x0A (code segment execute/read)
 	set_segment_descriptor(0xFFFFFFFF, 0x00000000, DATA_RW_ACCESS_RIGHT, gdt + 1);
@@ -47,8 +43,6 @@ void initialize_gdt(void)
 
 void initialize_idt(void)
 {
-	const int IDT_ADDRESS = 0x0026F800;
-	const int IDT_LIMIT = 0x000007FF;
 	GateDescriptor *idt = (GateDescriptor*)IDT_ADDRESS;
 	for (int i = 0; i < IDT_LIMIT / 8; i++)
 	{

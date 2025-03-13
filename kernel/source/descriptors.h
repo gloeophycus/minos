@@ -1,6 +1,14 @@
 #ifndef DESCRIPOTRS_H
 #define DESCRIPTORS_H
 
+#define G_BIT 1 << 15
+#define GDT_ADDRESS 0x00270000
+#define GDT_LIMIT 0x0000FFFF
+#define KERNEL_ADDRESS 0x00280000
+#define KERNEL_LIMIT 0x0007FFFF
+#define IDT_ADDRESS 0x0026F800
+#define IDT_LIMIT 0x000007FF
+
 typedef struct
 {
 	short limit_low;

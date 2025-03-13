@@ -5,6 +5,7 @@
 #include "entrypoint.h"
 #include "graphics.h"
 #include "interrupts.h"
+#include "memory.h"
 #include "queue.h"
 
 extern Queue keyboard_queue;
@@ -27,6 +28,9 @@ void _main(void)
 	out_8bit(PIC1_IMR, 0xEF); // enable mouse (11101111)
 	initialize_keyboard_controller();
 
+	MouseData mouse_data;
+	enable_mouse(&mouse_data);
+
 	SystemInfo *system_info = (SystemInfo*)SYSTEM_INFO_ADDRESS;
 	initialize_colors();
 	initialize_screen(system_info->screen_x, system_info->screen_y, system_info->vram);
@@ -42,8 +46,8 @@ void _main(void)
 	sprintf(string_buffer, "(%d, %d)", mouse_x, mouse_y);
 	print_string(system_info->screen_x, WHITE, (Point){0, 0}, string_buffer, system_info->vram);
 
-	MouseData mouse_data;
-	enable_mouse(&mouse_data);
+	sprintf(string_buffer, "memory %dMB", test_memory(0x00400000, 0xBFFFFFFF) / (1024 * 1024));
+	print_string(system_info->screen_x, WHITE, (Point){0, 32}, string_buffer, system_info->vram);
 
 	while (1)
 	{

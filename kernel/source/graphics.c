@@ -2,7 +2,7 @@
 
 void set_colors(int size, const RGB *colors)
 {
-	int eflags = load_eflags();
+	int eflags = read_eflags();
 	cli();
 	out_8bit(WRITE_ADDRESS_REGISTER, 0);
 	for (int i = 0; i < size; i++)
@@ -11,7 +11,7 @@ void set_colors(int size, const RGB *colors)
 		out_8bit(DATA_REGISTER, colors[i].green / 4);
 		out_8bit(DATA_REGISTER, colors[i].blue / 4);
 	}
-	store_eflags(eflags);
+	write_eflags(eflags);
 }
 
 void initialize_colors(void)

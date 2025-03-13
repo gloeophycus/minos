@@ -2,7 +2,8 @@
 .global		hlt, cli, sti, sti_hlt
 .global		in_8bit, in_16bit, in_32bit
 .global		out_8bit, out_16bit, out_32bit
-.global		load_eflags, store_eflags
+.global		read_eflags, write_eflags
+.global		read_cr0, write_cr0
 .global		load_gdtr, load_idtr
 .global		_keyboard_interrupt_handler, _mouse_interrupt_handler
 .extern 	keyboard_interrupt_handler, mouse_interrupt_handler
@@ -58,17 +59,26 @@ out_32bit:
 	out	dx, eax
 	ret
 
-load_eflags:
+read_eflags:
 	pushfd
 	pop	eax
 	ret
 
-store_eflags:
+write_eflags:
 	mov	eax, [esp + 4]
 	push	eax
 	popfd
 	ret	
 	
+read_cr0:
+	mov	eax, cr0
+	ret
+
+write_cr0:
+	mov	eax, [esp + 4]
+	mov	cr0, eax
+	ret
+
 load_gdtr:
 	mov	ax, [esp + 4]
 	mov	[esp + 6], ax
