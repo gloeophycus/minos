@@ -6,6 +6,7 @@
 #include "graphics.h"
 #include "interrupts.h"
 #include "memory.h"
+#include "memory_allocator.h"
 #include "queue.h"
 
 extern Queue keyboard_queue;
@@ -31,6 +32,12 @@ void _main(void)
 	MouseData mouse_data;
 	enable_mouse(&mouse_data);
 
+	unsigned int total_memory = test_memory(0x00400000, 0xBFFFFFFF);
+	MemoryAllocator *memory_allocator = (MemoryAllocator*)MEMORY_ALLOCATOR_ADDRESS;
+	initialize_memory_allocator(memory_allocator);
+	free_memory(0x00001000, 0x0009E000, memory_allocator);
+	free_memory(0x00400000, total_memory - 0x00400000, memory_allocator);
+
 	SystemInfo *system_info = (SystemInfo*)SYSTEM_INFO_ADDRESS;
 	initialize_colors();
 	initialize_screen(system_info->screen_x, system_info->screen_y, system_info->vram);
@@ -46,7 +53,7 @@ void _main(void)
 	sprintf(string_buffer, "(%d, %d)", mouse_x, mouse_y);
 	print_string(system_info->screen_x, WHITE, (Point){0, 0}, string_buffer, system_info->vram);
 
-	sprintf(string_buffer, "memory %dMB", test_memory(0x00400000, 0xBFFFFFFF) / (1024 * 1024));
+	sprintf(string_buffer, "memory %dMB    free: %dKB", total_memory / (1024 * 1024), available_memory_size(memory_allocator) / 1024);
 	print_string(system_info->screen_x, WHITE, (Point){0, 32}, string_buffer, system_info->vram);
 
 	while (1)

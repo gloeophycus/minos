@@ -10,7 +10,7 @@ enum EFLAGS
 
 enum CR0
 {
-	NOW_WRITE_THROUGH = 1 << 29,
+	NOT_WRITE_THROUGH = 1 << 29,
 	CACHE_DISABLE = 1 << 30,
 };
 

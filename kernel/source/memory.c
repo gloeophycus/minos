@@ -20,14 +20,14 @@ static bool check_cache(void)
 static void disable_cache(void)
 {
 	unsigned int cr0 = read_cr0();
-	cr0 |= (NOW_WRITE_THROUGH | CACHE_DISABLE);
+	cr0 |= (NOT_WRITE_THROUGH | CACHE_DISABLE);
 	write_cr0(cr0);
 }
 
 static void enable_cache(void)
 {
 	unsigned int cr0 = read_cr0();
-	cr0 &= ~(NOW_WRITE_THROUGH | CACHE_DISABLE);
+	cr0 &= ~(NOT_WRITE_THROUGH | CACHE_DISABLE);
 	write_cr0(cr0);
 }
 
